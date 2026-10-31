@@ -53,6 +53,7 @@ export function DatePicker({ name, label, defaultValue }: { name: string; label:
   const [open, setOpen] = useState(false);
   const [view, setView] = useState("");
   const [focusDay, setFocusDay] = useState("");
+  const [up, setUp] = useState(false);
   const [dir, setDir] = useState<"next" | "prev">("next");
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -61,6 +62,9 @@ export function DatePicker({ name, label, defaultValue }: { name: string; label:
     const base = value || today;
     setView(base.slice(0, 7));
     setFocusDay(base);
+    // En escritorio abre hacia arriba si abajo no hay espacio (evita estirar la página).
+    const r = triggerRef.current?.getBoundingClientRect();
+    setUp(!!r && window.innerHeight - r.bottom < 440 && r.top > 440);
     setOpen(true);
   }
 
@@ -166,7 +170,7 @@ export function DatePicker({ name, label, defaultValue }: { name: string; label:
         aria-label={label}
         inert={!open}
         data-open={open}
-        className="invisible fixed inset-x-0 bottom-0 z-50 translate-y-full rounded-t-3xl border border-border bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl outline-none transition-[transform,opacity,visibility] duration-300 ease-[var(--ease-drawer)] data-[open=true]:visible data-[open=true]:translate-y-0 md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-[calc(100%+0.5rem)] md:w-[21rem] md:origin-top-left md:translate-y-0 md:scale-95 md:rounded-2xl md:pb-5 md:opacity-0 md:data-[open=true]:scale-100 md:data-[open=true]:opacity-100"
+        className={`invisible fixed inset-x-0 bottom-0 z-50 translate-y-full rounded-t-3xl border border-border bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl outline-none transition-[transform,opacity,visibility] duration-300 ease-[var(--ease-drawer)] data-[open=true]:visible data-[open=true]:translate-y-0 md:absolute md:inset-x-auto md:left-0 md:w-[21rem] ${up ? "md:bottom-[calc(100%+0.5rem)] md:top-auto md:origin-bottom-left" : "md:bottom-auto md:top-[calc(100%+0.5rem)] md:origin-top-left"} md:translate-y-0 md:scale-95 md:rounded-2xl md:pb-5 md:opacity-0 md:data-[open=true]:scale-100 md:data-[open=true]:opacity-100`}
       >
         <div className="mb-3 flex gap-2">
           {[
@@ -199,7 +203,7 @@ export function DatePicker({ name, label, defaultValue }: { name: string; label:
           >
             <Chevron dir="left" />
           </button>
-          <p aria-live="polite" className="font-display font-semibold capitalize">
+          <p aria-live="polite" className="font-display font-semibold first-letter:uppercase">
             {view && monthLabel(view)}
           </p>
           <button

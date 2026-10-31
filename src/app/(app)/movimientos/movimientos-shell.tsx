@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useOptimistic, useRef, useState, useTransition, type ReactNode } from "react";
 import { Segmented } from "@/components/app/Segmented";
-import { addMonths, monthLabel } from "@/lib/dates";
+import { MonthPicker } from "@/components/app/MonthPicker";
+import { addMonths } from "@/lib/dates";
 
 export type Params = { ym: string; tipo: "" | "income" | "expense"; cta: string; cat: string };
 type Account = { id: string; name: string };
@@ -114,18 +115,22 @@ export function MovimientosShell({
           type="button"
           aria-label="Mes anterior"
           onClick={() => navigate({ ym: addMonths(opt.ym, -1) })}
-          className="press grid h-11 w-11 place-items-center rounded-full text-xl hover:bg-surface-2"
+          className="press grid h-12 w-12 place-items-center rounded-full border border-border bg-surface hover:border-primary/50 hover:bg-surface-2"
         >
-          ‹
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M14.5 6l-6 6 6 6" />
+          </svg>
         </button>
-        <h1 className="font-display text-xl font-semibold capitalize">{monthLabel(opt.ym)}</h1>
+        <MonthPicker value={opt.ym} onChange={(ym) => navigate({ ym })} />
         <button
           type="button"
           aria-label="Mes siguiente"
           onClick={() => navigate({ ym: addMonths(opt.ym, 1) })}
-          className="press grid h-11 w-11 place-items-center rounded-full text-xl hover:bg-surface-2"
+          className="press grid h-12 w-12 place-items-center rounded-full border border-border bg-surface hover:border-primary/50 hover:bg-surface-2"
         >
-          ›
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M9.5 6l6 6-6 6" />
+          </svg>
         </button>
       </header>
 
