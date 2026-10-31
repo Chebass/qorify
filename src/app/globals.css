@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+/* Tokens de diseño Qorify — paleta del moodboard (#120E28, #5349C2, #B48BF1, #F2C382, #EE7755) */
+:root {
+  --bg: #faf6ee;
+  --surface: #ffffff;
+  --surface-2: #f1ebdd;
+  --border: #e3dccb;
+  --text: #120e28;
+  --text-muted: #5d5878;
+  --primary: #5349c2;
+  --primary-contrast: #ffffff;
+  --accent: #b48bf1;
+  --peach: #f2c382;
+  --cta: #ee7755;
+  --success: #2f8f5b;
+  --danger: #d6453d;
+}
+
+:root[data-theme="dark"] {
+  --bg: #120e28;
+  --surface: #1c1738;
+  --surface-2: #272050;
+  --border: #342c63;
+  --text: #f4f1ff;
+  --text-muted: #a9a3c9;
+  --primary: #7a6fe0;
+  --primary-contrast: #ffffff;
+  --accent: #b48bf1;
+  --peach: #f2c382;
+  --cta: #ee7755;
+  --success: #4fc88a;
+  --danger: #ff7a70;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-primary-contrast: var(--primary-contrast);
+  --color-accent: var(--accent);
+  --color-peach: var(--peach);
+  --color-cta: var(--cta);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-sora);
+  --radius-card: 1.25rem;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+}
+
+/* Animaciones del paisaje */
+@keyframes cloud-drift { from { transform: translateX(-220px); } to { transform: translateX(640px); } }
+@keyframes twinkle { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@keyframes wave { from { transform: translateX(0); } to { transform: translateX(-100px); } }
+@keyframes fly { from { transform: translateX(-80px); } to { transform: translateX(480px); } }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@keyframes shimmer { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.55; } }
+@keyframes firefly { 0%, 100% { transform: translate(0, 0); opacity: 0.3; } 50% { transform: translate(12px, -14px); opacity: 1; } }
+@keyframes mist { from { transform: translateX(-40px); } to { transform: translateX(40px); } }
+
+.cloud-drift { animation: cloud-drift 100s linear infinite; }
+.twinkle { animation: twinkle 3.2s ease-in-out infinite; }
+.wave { animation: wave 8s linear infinite; }
+.fly { animation: fly 36s linear infinite; }
+.bob { animation: bob 1.8s ease-in-out infinite; }
+.sway { animation: sway 5s ease-in-out infinite; }
+.shimmer { animation: shimmer 3s ease-in-out infinite; }
+.firefly { animation: firefly 5s ease-in-out infinite; }
+.mist { animation: mist 16s ease-in-out infinite alternate; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .cloud-drift { transform: translateX(120px); }
+  .fly { transform: translateX(200px); }
+}
+
+/* ───────── Sistema de movimiento ─────────
+   Curvas fuertes, 100–300 ms, solo transform/opacity. Los hovers solo aplican con mouse (Tailwind v4 ya lo filtra). */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes skeleton { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* Feedback al presionar: todo lo clicable "responde" */
+.press { transition: transform 160ms var(--ease-out), background-color 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease; }
+.press:active { transform: scale(0.97); }
+
+/* Entrada de página y de listas (escalonada, 40 ms entre elementos) */
+.page-enter { animation: rise 320ms var(--ease-out) both; }
+.stagger > * { animation: rise 340ms var(--ease-out) both; }
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 40ms; }
+.stagger > *:nth-child(3) { animation-delay: 80ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 160ms; }
+.stagger > *:nth-child(6) { animation-delay: 200ms; }
+.stagger > *:nth-child(n + 7) { animation-delay: 240ms; }
+
+.fade-in { animation: fade-in 500ms ease-out both; }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: skeleton 1.6s linear infinite;
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+h1, h2 { text-wrap: balance; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .stagger > *, .fade-in { animation: none; }
+  .skeleton { animation: none; }
+  .press:active { transform: none; }
+}
+
+/* ───────── Hovers y superficies ───────── */
+:root { --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); }
+
+/* El "press" ahora también anima `translate` (los hovers con -translate-y usan esa propiedad) */
+.press { transition: transform 160ms var(--ease-out), translate 160ms var(--ease-out), background-color 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease, box-shadow 200ms ease; }
+
+/* Tarjetas: se elevan y se tiñen de primario al pasar el mouse (solo dispositivos con hover) */
+.card {
+  transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 220ms ease, background-color 220ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--primary) 38%, var(--border));
+    box-shadow: 0 16px 36px -20px color-mix(in oklab, var(--primary) 60%, transparent);
+  }
+}
+.card:active { transform: scale(0.985); }
+
+/* Brillo que cruza la tarjeta principal al pasar el mouse */
+.sheen { position: relative; overflow: hidden; isolation: isolate; }
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.2) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 800ms var(--ease-out);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sheen:hover::after { transform: translateX(120%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover, .card:active { transform: none; }
+  .sheen::after { display: none; }
+}
