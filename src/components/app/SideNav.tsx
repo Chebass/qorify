@@ -14,11 +14,13 @@ export function SideNav() {
 
       <Link
         href="/movimientos/nuevo"
-        className="flex items-center justify-center gap-2 rounded-xl bg-cta px-4 py-3 font-semibold text-white press hover:brightness-110"
+        className="btn-cta flex items-center gap-3 rounded-2xl py-2.5 pl-2.5 pr-4 text-[15px] font-bold"
       >
-        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
-          <path d="M12 5v14M5 12h14" />
-        </svg>
+        <span className="btn-cta-icon grid h-9 w-9 place-items-center rounded-xl bg-[#1c1233]/12">
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </span>
         Nuevo movimiento
       </Link>
 

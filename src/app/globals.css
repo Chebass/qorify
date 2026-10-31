@@ -173,3 +173,91 @@ h1, h2 { text-wrap: balance; }
   .card:hover, .card:active { transform: none; }
   .sheen::after { display: none; }
 }
+
+/* ───────── Botones, selección y detalles del navegador ───────── */
+:root {
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ink-on-cta: #1c1233;
+}
+
+/* Acción principal de la app (Nuevo movimiento): coral con relieve sutil y brillo al pasar el mouse */
+.btn-cta {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--ink-on-cta);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--cta) 82%, white) 0%, var(--cta) 60%, color-mix(in oklab, var(--cta) 90%, #b83a14) 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.45),
+    inset 0 -1px 0 rgb(0 0 0 / 0.08),
+    0 1px 2px rgb(18 14 40 / 0.14),
+    0 14px 26px -14px color-mix(in oklab, var(--cta) 85%, transparent);
+  transition: transform 160ms var(--ease-out), box-shadow 220ms var(--ease-out), filter 160ms ease;
+}
+.btn-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.4) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 700ms var(--ease-out);
+  pointer-events: none;
+}
+.btn-cta .btn-cta-icon { transition: transform 360ms var(--ease-spring); }
+@media (hover: hover) and (pointer: fine) {
+  .btn-cta:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.5),
+      inset 0 -1px 0 rgb(0 0 0 / 0.08),
+      0 1px 2px rgb(18 14 40 / 0.14),
+      0 18px 30px -14px color-mix(in oklab, var(--cta) 95%, transparent);
+  }
+  .btn-cta:hover::after { transform: translateX(120%); }
+  .btn-cta:hover .btn-cta-icon { transform: rotate(90deg); }
+}
+.btn-cta:active { transform: scale(0.97); }
+
+/* Acción de confirmación (Guardar): primario con el mismo lenguaje de relieve */
+.btn-primary {
+  color: var(--primary-contrast);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 86%, white) 0%, var(--primary) 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    0 1px 2px rgb(18 14 40 / 0.16),
+    0 12px 24px -14px var(--primary);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:not(:disabled):hover { filter: brightness(1.08); translate: 0 -1px; }
+}
+
+/* Entrada rápida para cuadrículas de fichas */
+.stagger-fast > * { animation: rise 280ms var(--ease-out) both; }
+.stagger-fast > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-fast > *:nth-child(2) { animation-delay: 25ms; }
+.stagger-fast > *:nth-child(3) { animation-delay: 50ms; }
+.stagger-fast > *:nth-child(4) { animation-delay: 75ms; }
+.stagger-fast > *:nth-child(5) { animation-delay: 100ms; }
+.stagger-fast > *:nth-child(6) { animation-delay: 125ms; }
+.stagger-fast > *:nth-child(n + 7) { animation-delay: 150ms; }
+
+/* Cambio de mes en el calendario */
+@keyframes cal-in-next { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+@keyframes cal-in-prev { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+.cal-next { animation: cal-in-next 240ms var(--ease-out) both; }
+.cal-prev { animation: cal-in-prev 240ms var(--ease-out) both; }
+
+/* Superficies del navegador que también llevan la marca */
+::selection { background: color-mix(in oklab, var(--primary) 30%, transparent); color: inherit; }
+input { caret-color: var(--primary); accent-color: var(--primary); }
+:focus-visible { outline: 2px solid color-mix(in oklab, var(--primary) 70%, transparent); outline-offset: 2px; }
+input:focus-visible, button:focus-visible:where(.outline-none) { outline: none; }
+html { scrollbar-color: color-mix(in oklab, var(--text-muted) 40%, transparent) transparent; scrollbar-width: thin; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-fast > *, .cal-next, .cal-prev { animation: none; }
+  .btn-cta::after { display: none; }
+  .btn-cta:hover, .btn-cta:active { transform: none; }
+  .btn-cta:hover .btn-cta-icon { transform: none; }
+}

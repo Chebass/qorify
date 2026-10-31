@@ -39,9 +39,9 @@ export function BottomNav() {
       <Link
         href="/movimientos/nuevo"
         aria-label="Agregar movimiento"
-        className="-mt-7 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-cta text-white shadow-lg ring-4 ring-bg press hover:brightness-110"
+        className="btn-cta -mt-7 flex h-14 w-14 shrink-0 items-center justify-center rounded-full ring-4 ring-bg"
       >
-        <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+        <svg viewBox="0 0 24 24" className="btn-cta-icon h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
           <path d="M12 5v14M5 12h14" />
         </svg>
       </Link>
