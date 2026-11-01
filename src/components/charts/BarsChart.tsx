@@ -27,6 +27,8 @@ export function BarsChart({ data, height = 150 }: { data: BarData[]; height?: nu
               borderRadius: 12,
               color: "var(--text)",
             }}
+            labelStyle={{ color: "var(--text-muted)", fontWeight: 600 }}
+            itemStyle={{ color: "var(--text)" }}
           />
           <Bar dataKey="value" animationDuration={500} animationEasing="ease-out" radius={[8, 8, 8, 8]} maxBarSize={dense ? 10 : 28}>
             {data.map((d, i) => (

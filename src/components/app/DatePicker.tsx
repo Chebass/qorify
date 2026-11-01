@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
+import { useScrollLock } from "./useScrollLock";
 import { addDays, addMonths, monthLabel } from "@/lib/dates";
 
 const WEEKDAYS = ["L", "M", "M", "J", "V", "S", "D"];
 
 const noop = () => () => {};
+const mounted = () => true;
 // "Hoy" en la zona horaria del dispositivo (el servidor puede estar en otra).
 const deviceToday = () => new Date().toLocaleDateString("en-CA");
 
@@ -13,10 +16,7 @@ function monthCells(ym: string): (string | null)[] {
   const [y, m] = ym.split("-").map(Number);
   const lead = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7; // semana desde lunes
   const days = new Date(Date.UTC(y, m, 0)).getUTCDate();
-  return [
-    ...Array<null>(lead).fill(null),
-    ...Array.from({ length: days }, (_, i) => `${ym}-${String(i + 1).padStart(2, "0")}`),
-  ];
+  return [...Array<null>(lead).fill(null), ...Array.from({ length: days }, (_, i) => `${ym}-${String(i + 1).padStart(2, "0")}`)];
 }
 
 function format(d: string) {
@@ -39,7 +39,16 @@ function relative(d: string, today: string) {
 
 function Chevron({ dir }: { dir: "left" | "right" }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <path d={dir === "left" ? "M14.5 6l-6 6 6 6" : "M9.5 6l6 6-6 6"} />
     </svg>
   );
@@ -51,9 +60,10 @@ export function DatePicker({ name, label, defaultValue }: { name: string; label:
   const value = picked ?? defaultValue ?? today;
 
   const [open, setOpen] = useState(false);
+  const canPortal = useSyncExternalStore(noop, mounted, () => false);
+  useScrollLock(open);
   const [view, setView] = useState("");
   const [focusDay, setFocusDay] = useState("");
-  const [up, setUp] = useState(false);
   const [dir, setDir] = useState<"next" | "prev">("next");
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -62,9 +72,6 @@ export function DatePicker({ name, label, defaultValue }: { name: string; label:
     const base = value || today;
     setView(base.slice(0, 7));
     setFocusDay(base);
-    // En escritorio abre hacia arriba si abajo no hay espacio (evita estirar la página).
-    const r = triggerRef.current?.getBoundingClientRect();
-    setUp(!!r && window.innerHeight - r.bottom < 440 && r.top > 440);
     setOpen(true);
   }
 
@@ -144,121 +151,138 @@ export function DatePicker({ name, label, defaultValue }: { name: string; label:
         }`}
       >
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/12 text-primary">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <svg
+            viewBox="0 0 24 24"
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
             <path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5zM4 10h16M8 3v4M16 3v4" />
           </svg>
         </span>
         <span id={`${name}-value`} className="min-w-0 flex-1 truncate first-letter:uppercase">
           {value ? format(value) : "Elegir fecha"}
         </span>
-        {rel && (
-          <span className="shrink-0 rounded-full bg-primary/12 px-2.5 py-0.5 text-xs font-semibold text-primary">{rel}</span>
-        )}
+        {rel && <span className="shrink-0 rounded-full bg-primary/12 px-2.5 py-0.5 text-xs font-semibold text-primary">{rel}</span>}
       </button>
 
-      <div
-        aria-hidden
-        onClick={() => close(false)}
-        className={`fixed inset-0 z-40 bg-black/45 backdrop-blur-[2px] transition-opacity duration-200 md:bg-transparent md:backdrop-blur-none ${
-          open ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      />
-
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-label={label}
-        inert={!open}
-        data-open={open}
-        className={`invisible fixed inset-x-0 bottom-0 z-50 translate-y-full rounded-t-3xl border border-border bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl outline-none transition-[transform,opacity,visibility] duration-300 ease-[var(--ease-drawer)] data-[open=true]:visible data-[open=true]:translate-y-0 md:absolute md:inset-x-auto md:left-0 md:w-[21rem] ${up ? "md:bottom-[calc(100%+0.5rem)] md:top-auto md:origin-bottom-left" : "md:bottom-auto md:top-[calc(100%+0.5rem)] md:origin-top-left"} md:translate-y-0 md:scale-95 md:rounded-2xl md:pb-5 md:opacity-0 md:data-[open=true]:scale-100 md:data-[open=true]:opacity-100`}
-      >
-        <div className="mb-3 flex gap-2">
-          {[
-            { label: "Hoy", d: today },
-            { label: "Ayer", d: yesterday },
-          ].map((q) => (
-            <button
-              key={q.label}
-              type="button"
-              disabled={!q.d}
-              aria-pressed={value === q.d}
-              onClick={() => choose(q.d)}
-              className={`press h-9 rounded-full border px-4 text-sm font-semibold ${
-                value === q.d
-                  ? "border-primary bg-primary text-primary-contrast"
-                  : "border-border hover:border-primary/50 hover:bg-surface-2"
+      {canPortal &&
+        // En un portal para que `fixed` se ancle a la pantalla y no a un ancestro con transform (animaciones).
+        createPortal(
+          <>
+            <div
+              aria-hidden
+              onClick={() => close(false)}
+              className={`fixed inset-0 z-40 bg-black/45 backdrop-blur-[2px] transition-opacity duration-200 ${
+                open ? "opacity-100" : "pointer-events-none opacity-0"
               }`}
-            >
-              {q.label}
-            </button>
-          ))}
-        </div>
+            />
 
-        <div className="mb-1 flex items-center justify-between">
-          <button
-            type="button"
-            aria-label="Mes anterior"
-            onClick={() => shiftMonth(-1)}
-            className="press grid h-10 w-10 place-items-center rounded-full hover:bg-surface-2"
-          >
-            <Chevron dir="left" />
-          </button>
-          <p aria-live="polite" className="font-display font-semibold first-letter:uppercase">
-            {view && monthLabel(view)}
-          </p>
-          <button
-            type="button"
-            aria-label="Mes siguiente"
-            onClick={() => shiftMonth(1)}
-            className="press grid h-10 w-10 place-items-center rounded-full hover:bg-surface-2"
-          >
-            <Chevron dir="right" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-7 text-center text-xs font-semibold text-muted" aria-hidden>
-          {WEEKDAYS.map((w, i) => (
-            <span key={i} className="py-2">
-              {w}
-            </span>
-          ))}
-        </div>
-
-        <div
-          key={view}
-          role="grid"
-          aria-label={view && monthLabel(view)}
-          onKeyDown={onGridKey}
-          className={`grid grid-cols-7 gap-y-1 ${dir === "next" ? "cal-next" : "cal-prev"}`}
-        >
-          {(view ? monthCells(view) : []).map((d, i) => {
-            if (!d) return <span key={`e${i}`} />;
-            const selected = d === value;
-            const isToday = d === today;
-            return (
-              <button
-                key={d}
-                type="button"
-                role="gridcell"
-                data-day={d}
-                tabIndex={d === focusDay ? 0 : -1}
-                aria-selected={selected}
-                aria-current={isToday ? "date" : undefined}
-                onClick={() => choose(d)}
-                className={`press mx-auto grid h-10 w-10 place-items-center rounded-full text-sm tabular outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
-                  selected
-                    ? "bg-primary font-bold text-primary-contrast shadow-[0_8px_16px_-8px_var(--primary)]"
-                    : isToday
-                      ? "font-bold text-primary ring-1 ring-primary/50 hover:bg-primary/10"
-                      : "hover:bg-surface-2"
-                }`}
+            <div className="pointer-events-none fixed inset-0 z-50 flex items-end justify-center md:items-center">
+              <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label={label}
+                inert={!open}
+                data-open={open}
+                className="pointer-events-auto invisible max-h-[90dvh] w-full translate-y-full overflow-y-auto rounded-t-3xl border border-border bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl outline-none transition-[transform,opacity,visibility] duration-300 ease-[var(--ease-drawer)] data-[open=true]:visible data-[open=true]:translate-y-0 md:max-w-[21rem] md:translate-y-0 md:scale-95 md:rounded-2xl md:pb-5 md:opacity-0 md:data-[open=true]:scale-100 md:data-[open=true]:opacity-100"
               >
-                {Number(d.slice(8))}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+                <div className="mb-3 flex gap-2">
+                  {[
+                    { label: "Hoy", d: today },
+                    { label: "Ayer", d: yesterday },
+                  ].map((q) => (
+                    <button
+                      key={q.label}
+                      type="button"
+                      disabled={!q.d}
+                      aria-pressed={value === q.d}
+                      onClick={() => choose(q.d)}
+                      className={`press h-9 rounded-full border px-4 text-sm font-semibold ${
+                        value === q.d
+                          ? "border-primary bg-primary text-primary-contrast"
+                          : "border-border hover:border-primary/50 hover:bg-surface-2"
+                      }`}
+                    >
+                      {q.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mb-1 flex items-center justify-between">
+                  <button
+                    type="button"
+                    aria-label="Mes anterior"
+                    onClick={() => shiftMonth(-1)}
+                    className="press grid h-10 w-10 place-items-center rounded-full hover:bg-surface-2"
+                  >
+                    <Chevron dir="left" />
+                  </button>
+                  <p aria-live="polite" className="font-display font-semibold first-letter:uppercase">
+                    {view && monthLabel(view)}
+                  </p>
+                  <button
+                    type="button"
+                    aria-label="Mes siguiente"
+                    onClick={() => shiftMonth(1)}
+                    className="press grid h-10 w-10 place-items-center rounded-full hover:bg-surface-2"
+                  >
+                    <Chevron dir="right" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-7 text-center text-xs font-semibold text-muted" aria-hidden>
+                  {WEEKDAYS.map((w, i) => (
+                    <span key={i} className="py-2">
+                      {w}
+                    </span>
+                  ))}
+                </div>
+
+                <div
+                  key={view}
+                  role="grid"
+                  aria-label={view && monthLabel(view)}
+                  onKeyDown={onGridKey}
+                  className={`grid grid-cols-7 gap-y-1 ${dir === "next" ? "cal-next" : "cal-prev"}`}
+                >
+                  {(view ? monthCells(view) : []).map((d, i) => {
+                    if (!d) return <span key={`e${i}`} />;
+                    const selected = d === value;
+                    const isToday = d === today;
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        role="gridcell"
+                        data-day={d}
+                        tabIndex={d === focusDay ? 0 : -1}
+                        aria-selected={selected}
+                        aria-current={isToday ? "date" : undefined}
+                        onClick={() => choose(d)}
+                        className={`press mx-auto grid h-10 w-10 place-items-center rounded-full text-sm tabular outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
+                          selected
+                            ? "bg-primary font-bold text-primary-contrast shadow-[0_8px_16px_-8px_var(--primary)]"
+                            : isToday
+                              ? "font-bold text-primary ring-1 ring-primary/50 hover:bg-primary/10"
+                              : "hover:bg-surface-2"
+                        }`}
+                      >
+                        {Number(d.slice(8))}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </>,
+          document.body,
+        )}
     </div>
   );
 }
