@@ -25,7 +25,8 @@ const CLOUDS = [
   { y: 90, s: 0.7, dur: 110, delay: -95 },
 ];
 
-export function Sky({ env }: { env: Env }) {
+/** `overlay`: solo estrellas y nubes animadas sobre una imagen (sin fondo, sol ni luna dibujados). */
+export function Sky({ env, overlay = false }: { env: Env; overlay?: boolean }) {
   const cloudColor = mix("#ffffff", env.sky.bottom, 0.25 + env.warm * 0.2);
   const cloudOpacity = 0.25 + env.light * 0.6;
 
@@ -55,15 +56,19 @@ export function Sky({ env }: { env: Env }) {
         </linearGradient>
       </defs>
 
-      <rect x="0" y="-100" width="400" height="1000" fill="url(#sky)" />
-      <rect
-        x="0"
-        y={HORIZON - 220}
-        width="400"
-        height="220"
-        fill="url(#horizonGlow)"
-        opacity={env.warm}
-      />
+      {!overlay && (
+        <>
+          <rect x="0" y="-100" width="400" height="1000" fill="url(#sky)" />
+          <rect
+            x="0"
+            y={HORIZON - 220}
+            width="400"
+            height="220"
+            fill="url(#horizonGlow)"
+            opacity={env.warm}
+          />
+        </>
+      )}
 
       <g opacity={env.stars}>
         {STARS.map((s, i) => (
@@ -79,15 +84,19 @@ export function Sky({ env }: { env: Env }) {
         ))}
       </g>
 
-      <g opacity={env.sun.o} transform={`translate(${env.sun.x} ${env.sun.y})`}>
-        <circle r="90" fill="url(#sunGlow)" />
-        <circle r="20" fill="#fff3c4" />
-      </g>
+      {!overlay && (
+        <>
+          <g opacity={env.sun.o} transform={`translate(${env.sun.x} ${env.sun.y})`}>
+            <circle r="90" fill="url(#sunGlow)" />
+            <circle r="20" fill="#fff3c4" />
+          </g>
 
-      <g opacity={env.moon.o} transform={`translate(${env.moon.x} ${env.moon.y})`}>
-        <circle r="60" fill="url(#moonGlow)" />
-        <circle r="17" fill="#fff6d8" mask="url(#moonMask)" />
-      </g>
+          <g opacity={env.moon.o} transform={`translate(${env.moon.x} ${env.moon.y})`}>
+            <circle r="60" fill="url(#moonGlow)" />
+            <circle r="17" fill="#fff6d8" mask="url(#moonMask)" />
+          </g>
+        </>
+      )}
 
       <g opacity={cloudOpacity}>
         {CLOUDS.map((c, i) => (

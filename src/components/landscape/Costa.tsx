@@ -27,7 +27,7 @@ function Palm({ x, y, env, s = 1 }: { x: number; y: number; env: Env; s?: number
   );
 }
 
-function Bird({ y, dur, delay, env }: { y: number; dur: number; delay: number; env: Env }) {
+export function Bird({ y, dur, delay, env }: { y: number; dur: number; delay: number; env: Env }) {
   return (
     <g transform={`translate(0 ${y})`}>
       <g className="fly" style={{ animationDuration: `${dur}s`, animationDelay: `${delay}s` }}>
