@@ -267,3 +267,7 @@ html { scrollbar-color: color-mix(in oklab, var(--text-muted) 40%, transparent) 
   .btn-cta:hover, .btn-cta:active { transform: none; }
   .btn-cta:hover .btn-cta-icon { transform: none; }
 }
+
+/* Recharts: sin el recuadro blanco del navegador al tocar el gráfico; el foco de teclado usa el color de marca. */
+.recharts-wrapper, .recharts-wrapper *, .recharts-surface { outline: none; }
+.recharts-surface:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 12px; }
