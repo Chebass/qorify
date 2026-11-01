@@ -3,7 +3,7 @@ export function Brand({ tagline }: { tagline: string }) {
   return (
     <header className="mb-4 text-center">
       <h1
-        className="font-display text-[2.6rem] font-bold leading-none tracking-[-0.03em] bg-gradient-to-br from-[#f7d774] via-[#e9a93b] to-[#b8741a] bg-clip-text text-transparent [filter:drop-shadow(0_2px_6px_rgb(10_8_36/0.35))]"
+        className="font-display text-[2.6rem] font-bold leading-none tracking-[-0.03em] bg-gradient-to-br from-[#e8a817] via-[#c9780c] to-[#8a4607] bg-clip-text text-transparent [filter:drop-shadow(0_2px_6px_rgb(10_8_36/0.35))]"
         aria-label="Qorify"
       >
         Qorify

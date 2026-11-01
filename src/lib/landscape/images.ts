@@ -18,7 +18,12 @@ export function phaseAt(hour: number): Phase {
  *   sierra: { dia: "/landscapes/sierra-dia.webp", noche: "/landscapes/sierra-noche.webp" }
  */
 export const IMAGES: Partial<Record<Region, Partial<Record<Phase, string>>>> = {
-  sierra: { dia: "/landscapes/sierra-dia.webp" },
+  sierra: {
+    amanecer: "/landscapes/sierra-amanecer.webp",
+    dia: "/landscapes/sierra-dia.webp",
+    atardecer: "/landscapes/sierra-atardecer.webp",
+    noche: "/landscapes/sierra-noche.webp",
+  },
 };
 
 // Si falta la franja exacta se usa la más parecida y se oscurece/aclara con CSS.
