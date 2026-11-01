@@ -28,7 +28,7 @@ function Field({ label, icon, trailing, hint, children }: { label: string; icon:
   return (
     <label className="flex flex-col gap-1.5 text-sm font-medium">
       {label}
-      <span className="group flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 text-muted transition focus-within:border-primary focus-within:text-primary focus-within:ring-2 focus-within:ring-primary/25">
+      <span className="group flex items-center gap-2.5 rounded-2xl border border-border bg-surface/70 px-3 text-muted transition focus-within:border-primary focus-within:text-primary focus-within:ring-2 focus-within:ring-primary/25">
         <Icon d={icon} />
         {children}
         {trailing}
@@ -38,7 +38,7 @@ function Field({ label, icon, trailing, hint, children }: { label: string; icon:
   );
 }
 
-const inputClass = "min-w-0 flex-1 bg-transparent py-3 text-base font-normal text-text outline-none placeholder:text-muted/60";
+const inputClass = "min-w-0 flex-1 bg-transparent py-2.5 text-base font-normal text-text outline-none placeholder:text-muted/60";
 
 export function AuthForm({ mode, action }: Props) {
   const [state, formAction, pending] = useActionState(action, undefined);
@@ -46,7 +46,7 @@ export function AuthForm({ mode, action }: Props) {
   const isRegister = mode === "register";
 
   return (
-    <form action={formAction} className="flex w-full flex-col gap-4">
+    <form action={formAction} className="flex w-full flex-col gap-3">
       {isRegister && (
         <Field label="Nombre" icon={ICONS.user}>
           <input name="name" autoComplete="name" required placeholder="¿Cómo te llamamos?" className={inputClass} />
@@ -99,7 +99,7 @@ export function AuthForm({ mode, action }: Props) {
       <button
         type="submit"
         disabled={pending}
-        className="btn-primary press mt-1 flex items-center justify-center gap-2 rounded-2xl px-4 py-3.5 font-semibold disabled:opacity-70"
+        className="btn-primary press mt-1 flex items-center justify-center gap-2 rounded-2xl px-4 py-3 font-semibold disabled:opacity-70"
       >
         {pending && <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />}
         {pending ? "Un momento…" : isRegister ? "Crear cuenta" : "Entrar"}

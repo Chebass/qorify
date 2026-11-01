@@ -10,6 +10,8 @@ import { Sky } from "./Sky";
 import { Sierra } from "./Sierra";
 import { Costa } from "./Costa";
 import { Selva } from "./Selva";
+import { ImageScene } from "./ImageScene";
+import { imageFor } from "@/lib/landscape/images";
 
 // La preferencia se elige en Perfil → Paisaje y se recuerda en este dispositivo.
 function readMode(): Mode {
@@ -70,6 +72,8 @@ function Scene({ serverRegion }: { serverRegion: Region }) {
     dev.r ?? (mode === "random" ? randomRegion : mode === "auto" ? (geo ?? serverRegion) : mode);
   const h = dev.t ?? hour;
   const env = computeEnv(h);
+  const image = imageFor(region, h);
+  const label = `Paisaje de la ${region} del Perú`;
 
   function onPointerMove(e: PointerEvent<HTMLDivElement>) {
     const el = e.currentTarget;
@@ -79,18 +83,22 @@ function Scene({ serverRegion }: { serverRegion: Region }) {
 
   return (
     <div className="scene fade-in fixed inset-0 z-0 overflow-hidden" onPointerMove={onPointerMove}>
-      <svg
-        className="absolute inset-0 h-full w-full"
-        viewBox="0 90 400 800"
-        preserveAspectRatio="xMidYMid slice"
-        role="img"
-        aria-label={`Paisaje de la ${region} del Perú`}
-      >
-        <Sky env={env} />
-        {region === "sierra" && <Sierra env={env} />}
-        {region === "costa" && <Costa env={env} />}
-        {region === "selva" && <Selva env={env} />}
-      </svg>
+      {image ? (
+        <ImageScene src={image.src} exact={image.exact} env={env} label={label} />
+      ) : (
+        <svg
+          className="absolute inset-0 h-full w-full"
+          viewBox="0 90 400 800"
+          preserveAspectRatio="xMidYMid slice"
+          role="img"
+          aria-label={label}
+        >
+          <Sky env={env} />
+          {region === "sierra" && <Sierra env={env} />}
+          {region === "costa" && <Costa env={env} />}
+          {region === "selva" && <Selva env={env} />}
+        </svg>
+      )}
 
       <div className="pointer-events-none absolute left-0 right-0 top-0 px-6 pt-8 text-center text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]">
         <p className="font-display text-3xl font-semibold">{greeting(h)}</p>

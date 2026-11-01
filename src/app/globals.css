@@ -78,6 +78,8 @@ body {
 .shimmer { animation: shimmer 3s ease-in-out infinite; }
 .firefly { animation: firefly 5s ease-in-out infinite; }
 .mist { animation: mist 16s ease-in-out infinite alternate; }
+@keyframes kenburns { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.06) translate(-1%, -1.2%); } }
+.kenburns { animation: kenburns 40s ease-in-out infinite alternate; }
 
 @media (prefers-reduced-motion: reduce) {
   .scene * {
