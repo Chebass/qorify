@@ -10,7 +10,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <LandscapeBackground />
       </Suspense>
       <main className="pointer-events-none relative z-10 flex flex-1 items-end justify-center px-4 pb-6 pt-28 sm:pb-10">
-        <div className="pointer-events-auto w-full max-w-sm">{children}</div>
+        <div className="pointer-events-auto w-full max-w-[19rem]">{children}</div>
       </main>
     </div>
   );
