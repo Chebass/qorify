@@ -24,6 +24,12 @@ export const IMAGES: Partial<Record<Region, Partial<Record<Phase, string>>>> = {
     atardecer: "/landscapes/costa-atardecer.webp",
     noche: "/landscapes/costa-noche.webp",
   },
+  selva: {
+    amanecer: "/landscapes/selva-amanecer.webp",
+    dia: "/landscapes/selva-dia.webp",
+    atardecer: "/landscapes/selva-atardecer.webp",
+    noche: "/landscapes/selva-noche.webp",
+  },
   sierra: {
     amanecer: "/landscapes/sierra-amanecer.webp",
     dia: "/landscapes/sierra-dia.webp",
