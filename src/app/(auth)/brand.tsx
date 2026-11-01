@@ -1,9 +1,9 @@
-/** Wordmark de Qorify. "Qori" = oro en quechua: de ahí el degradado dorado. */
+/** Wordmark de Qorify. color de marca: azul índigo de la paleta (más claro en modo oscuro). */
 export function Brand({ tagline }: { tagline: string }) {
   return (
     <header className="mb-4 text-center">
       <h1
-        className="font-display text-[2.6rem] font-bold leading-none tracking-[-0.03em] bg-gradient-to-br from-[#f7d774] via-[#e9a93b] to-[#b8741a] bg-clip-text text-transparent [filter:drop-shadow(0_2px_6px_rgb(10_8_36/0.35))]"
+        className="font-display text-[2.6rem] font-bold leading-none tracking-[-0.03em] bg-gradient-to-br from-(color:--brand-from) to-(color:--brand-to) bg-clip-text text-transparent"
         aria-label="Qorify"
       >
         Qorify

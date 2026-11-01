@@ -15,9 +15,28 @@ export function phaseAt(hour: number): Phase {
  * Registra aquí cada archivo cuando lo agregues; lo que no esté registrado
  * sigue usando el paisaje SVG dibujado en código.
  *
- *   sierra: { dia: "/landscapes/sierra-dia.webp", noche: "/landscapes/sierra-noche.webp" }
+ *   costa: { dia: "/landscapes/costa-dia.webp", noche: "/landscapes/costa-noche.webp" }
  */
-export const IMAGES: Partial<Record<Region, Partial<Record<Phase, string>>>> = {};
+export const IMAGES: Partial<Record<Region, Partial<Record<Phase, string>>>> = {
+  costa: {
+    amanecer: "/landscapes/costa-amanecer.webp",
+    dia: "/landscapes/costa-dia.webp",
+    atardecer: "/landscapes/costa-atardecer.webp",
+    noche: "/landscapes/costa-noche.webp",
+  },
+  selva: {
+    amanecer: "/landscapes/selva-amanecer.webp",
+    dia: "/landscapes/selva-dia.webp",
+    atardecer: "/landscapes/selva-atardecer.webp",
+    noche: "/landscapes/selva-noche.webp",
+  },
+  sierra: {
+    amanecer: "/landscapes/sierra-amanecer.webp",
+    dia: "/landscapes/sierra-dia.webp",
+    atardecer: "/landscapes/sierra-atardecer.webp",
+    noche: "/landscapes/sierra-noche.webp",
+  },
+};
 
 // Si falta la franja exacta se usa la más parecida y se oscurece/aclara con CSS.
 const FALLBACK: Record<Phase, Phase[]> = {
