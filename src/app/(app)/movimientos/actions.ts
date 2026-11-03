@@ -18,6 +18,19 @@ function parse(formData: FormData) {
   });
 }
 
+type Row = ReturnType<typeof toRow>;
+
+// El cifrado de la nota puede fallar (p. ej. clave ausente o inválida). Se atrapa para mostrar
+// un mensaje en el formulario en vez de la pantalla de error genérica; el detalle queda en los logs.
+function safeRow(d: NonNullable<ReturnType<typeof parse>["data"]>): { row: Row } | { error: string } {
+  try {
+    return { row: toRow(d) };
+  } catch (e) {
+    console.error("[movimientos] no se pudo preparar el movimiento:", e instanceof Error ? e.message : e);
+    return { error: "No se pudo guardar la nota. Inténtalo de nuevo; si sigue fallando, guárdalo sin nota." };
+  }
+}
+
 function toRow(d: NonNullable<ReturnType<typeof parse>["data"]>) {
   return {
     type: d.type,
@@ -33,8 +46,11 @@ export async function createTransaction(_prev: TxFormState, formData: FormData):
   const parsed = parse(formData);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
+  const prepared = safeRow(parsed.data);
+  if ("error" in prepared) return { error: prepared.error };
+
   const supabase = await createClient();
-  const { error } = await supabase.from("transactions").insert(toRow(parsed.data));
+  const { error } = await supabase.from("transactions").insert(prepared.row);
   if (error) return { error: "No se pudo guardar el movimiento" };
   redirect("/movimientos");
 }
@@ -47,8 +63,11 @@ export async function updateTransaction(
   const parsed = parse(formData);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
+  const prepared = safeRow(parsed.data);
+  if ("error" in prepared) return { error: prepared.error };
+
   const supabase = await createClient();
-  const { error } = await supabase.from("transactions").update(toRow(parsed.data)).eq("id", id);
+  const { error } = await supabase.from("transactions").update(prepared.row).eq("id", id);
   if (error) return { error: "No se pudo actualizar el movimiento" };
   redirect("/movimientos");
 }
